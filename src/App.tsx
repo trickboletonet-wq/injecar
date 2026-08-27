@@ -1,4 +1,4 @@
-import { useEffect, useState, type FormEvent } from 'react';
+import { useEffect, useState, type FormEvent, type PointerEvent } from 'react';
 import {
   ArrowRight, ArrowUpRight, BatteryCharging, CarFront, Check, ChevronLeft, ChevronRight,
   CircleGauge, Cog, Droplets, Fan, Gauge, Instagram, LocateFixed, Mail, MapPin,
@@ -74,11 +74,45 @@ const gallery = [
 
 const signs = ['Luz da injeção acesa', 'Motor falhando', 'Consumo elevado', 'Barulhos na suspensão', 'Problemas nos freios', 'Dificuldade para engatar marchas', 'Ar-condicionado sem eficiência', 'Carro puxando para um lado'];
 
+const reviews = [
+  {
+    name: 'Gustavo Farias',
+    rating: 5,
+    text: 'Ótima oficina mecânica! Recentemente arrumei o ar condicionado do meu Astra. Ficou perfeito o serviço, sempre mandam video e foto de como está o processo dos ajustes mecânicos. Muito top!',
+    image: '/assets/images/reviews/Gustavo_Farias.png',
+    googleUrl: 'https://maps.app.goo.gl/FUcq1ETt59nfM6XL6',
+  },
+  {
+    name: 'Mariéle Ribeiro Trindade',
+    rating: 5,
+    text: 'Sou cliente da Injecar há 12 anos e sempre confio em todos os serviços prestados pelos profissionais da oficina. Além de fazer a manutenção dos carros que tive, também me orientaram nas aquisições de novos veículos. Destaco o atendimento acolhedor das meninas no setor administrativo.',
+    image: '/assets/images/reviews/Mariele_Ribeiro_Trindade.png',
+    googleUrl: 'https://maps.app.goo.gl/HA4pkdDpqCVzJcWB7',
+  },
+  {
+    name: 'Gustavo Debom Borges',
+    rating: 5,
+    text: 'Melhor mecânica da região. Atendimento nota 10. recomendo pra quem precisa ter um mecânico de confiança. sou cliente desde 2013.',
+    image: '/assets/images/reviews/Gustavo_Debom_Borges.png',
+    googleUrl: 'https://maps.app.goo.gl/JFiC7JbT8UxwezQj9',
+  },
+  {
+    name: 'Clair Souza',
+    rating: 5,
+    text: 'Esse ambiente é de confiança, recomendo esse lugar, o pessoal é muito simpático e o serviço deles são corretíssimos, são honestos e verdadeiro. Sou cliente deles a 10 anos. Desde que eles tinham a oficina perto de minha casa. Aliás só levo meu carro neles, são elles é quem fazem a mecânica do meu carro.',
+    image: '/assets/images/reviews/Clair_Souza.png',
+    googleUrl: 'https://maps.app.goo.gl/JMJ3a94JSxgr3e8m8',
+  },
+];
+
 function App() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [selectedImage, setSelectedImage] = useState<number | null>(null);
   const [sent, setSent] = useState(false);
+  const [reviewIndex, setReviewIndex] = useState(0);
+  const [reviewsPerView, setReviewsPerView] = useState(1);
+  const [reviewPointerStart, setReviewPointerStart] = useState<number | null>(null);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
@@ -91,7 +125,30 @@ function App() {
     return () => { document.body.style.overflow = ''; };
   }, [menuOpen, selectedImage]);
 
+  useEffect(() => {
+    const updateReviewsPerView = () => {
+      setReviewsPerView(window.innerWidth >= 1000 ? 3 : window.innerWidth >= 640 ? 2 : 1);
+    };
+    updateReviewsPerView();
+    window.addEventListener('resize', updateReviewsPerView);
+    return () => window.removeEventListener('resize', updateReviewsPerView);
+  }, []);
+
+  useEffect(() => {
+    setReviewIndex(index => Math.min(index, Math.max(0, reviews.length - reviewsPerView)));
+  }, [reviewsPerView]);
+
   const go = (id: string) => { setMenuOpen(false); document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' }); };
+  const moveReview = (direction: number) => {
+    setReviewIndex(index => Math.min(Math.max(0, index + direction), Math.max(0, reviews.length - reviewsPerView)));
+  };
+  const handleReviewPointerUp = (event: PointerEvent<HTMLDivElement>) => {
+    if (reviewPointerStart !== null) {
+      const distance = event.clientX - reviewPointerStart;
+      if (Math.abs(distance) > 45) moveReview(distance < 0 ? 1 : -1);
+    }
+    setReviewPointerStart(null);
+  };
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => { event.preventDefault(); setSent(true); };
 
   return (
@@ -154,7 +211,7 @@ function App() {
 
         <section id="estrutura" className="section gallery-section"><div className="container"><div className="section-heading"><div><div className="eyebrow eyebrow--dark"><span className="eyebrow-line" /> POR DENTRO DA INJECAR</div><h2>Conheça nossa<br /><span>oficina.</span></h2></div><p>Um pouco do espaço, das pessoas e do cuidado que fazem parte de cada atendimento.</p></div><div className="gallery-grid">{gallery.map(({ src, label }, index) => <button className={`gallery-item gallery-item--${index + 1}`} key={src} onClick={() => setSelectedImage(index)}><img src={src} alt={label} loading="lazy" /><span>{label}<ArrowUpRight size={15} /></span></button>)}</div></div></section>
 
-        <section className="section testimonials"><div className="container testimonial-inner"><div className="eyebrow"><span className="eyebrow-line" /> EXPERIÊNCIA DE QUEM CONFIA</div><h2>Ainda vamos contar<br /><em>essas histórias.</em></h2><p>Este espaço está preparado para receber avaliações reais dos clientes da Injecar.</p><div className="testimonial-placeholder"><div className="stars">{[1,2,3,4,5].map(i => <Star key={i} size={18} />)}</div><strong>Depoimentos reais em breve</strong><span>Conteúdo em atualização</span></div></div></section>
+        <section className="section testimonials"><div className="container testimonial-inner"><div className="eyebrow"><span className="eyebrow-line" /> EXPERIÊNCIA DE QUEM CONFIA</div><h2>Quem confia,<br /><em>recomenda.</em></h2><p>Avaliações reais de clientes da Injecar no Google.</p><div className="reviews-carousel" role="region" aria-roledescription="carrossel" aria-label="Avaliações de clientes"><div className="reviews-track" style={{ transform: `translateX(-${reviewIndex * (100 / reviewsPerView)}%)` }} onPointerDown={e => setReviewPointerStart(e.clientX)} onPointerUp={handleReviewPointerUp} onPointerLeave={e => { if (reviewPointerStart !== null) handleReviewPointerUp(e); }} onTouchStart={e => setReviewPointerStart(e.touches[0].clientX)} onTouchEnd={e => { if (reviewPointerStart !== null) { const distance = e.changedTouches[0].clientX - reviewPointerStart; if (Math.abs(distance) > 45) moveReview(distance < 0 ? 1 : -1); setReviewPointerStart(null); } }}>{reviews.map((review, index) => <article className="review-card" key={review.name} aria-roledescription="slide" aria-label={`Avaliação ${index + 1} de ${reviews.length}`} style={{ width: `calc(${100 / reviewsPerView}% - ${(reviewsPerView - 1) * 16 / reviewsPerView}px)` }}><div className="review-header"><img src={review.image} alt={`Foto de ${review.name}`} className="review-avatar" loading="lazy" /><div className="review-author"><strong>{review.name}</strong><span className="review-google"><Star size={11} fill="currentColor" /> Avaliação do Google</span></div></div><div className="review-stars" aria-label={`${review.rating} de 5 estrelas`}>{Array.from({ length: review.rating }).map((_, i) => <Star key={i} size={15} fill="currentColor" />)}</div><p className="review-text">{review.text}</p><a className="review-link" href={review.googleUrl} target="_blank" rel="noreferrer">Ver no Google <ArrowUpRight size={14} /></a></article>)}</div>{reviews.length > reviewsPerView && <div className="reviews-controls"><button className="review-arrow" aria-label="Avaliação anterior" onClick={() => moveReview(-1)} disabled={reviewIndex === 0}><ChevronLeft size={20} /></button><div className="review-dots">{Array.from({ length: Math.max(1, reviews.length - reviewsPerView + 1) }).map((_, i) => <button key={i} className={`review-dot ${reviewIndex === i ? 'review-dot--active' : ''}`} aria-label={`Ir para avaliação ${i + 1}`} onClick={() => setReviewIndex(i)} />)}</div><button className="review-arrow" aria-label="Próxima avaliação" onClick={() => moveReview(1)} disabled={reviewIndex >= reviews.length - reviewsPerView}><ChevronRight size={20} /></button></div>}</div></div></section>
 
         <section id="contato" className="section contact"><div className="container contact-grid"><div className="contact-info"><div className="eyebrow eyebrow--dark"><span className="eyebrow-line" /> FALE COM A INJECAR</div><h2>Precisa de uma<br /><span>avaliação?</span></h2><p>Entre em contato com a Injecar e explique o que está acontecendo com seu veículo. Nossa equipe poderá orientar você sobre o próximo passo.</p><div className="contact-links"><a href={whatsappUrl}><MessageCircle size={20} /><div><small>WhatsApp</small><strong>(51) 98269-6724</strong></div><ArrowUpRight size={17} /></a><a href={`tel:+${phone}`}><Phone size={20} /><div><small>Telefone</small><strong>(51) 98269-6724</strong></div><ArrowUpRight size={17} /></a><a href="https://instagram.com/injecaroficina" target="_blank" rel="noreferrer"><Instagram size={20} /><div><small>Instagram</small><strong>@injecaroficina</strong></div><ArrowUpRight size={17} /></a></div></div><form className="contact-form" onSubmit={handleSubmit}><div className="form-top"><span>Solicite um contato</span><span className="form-required">* campos obrigatórios</span></div>{sent ? <div className="success-message"><Check size={28} /><h3>Mensagem preparada.</h3><p>Agora é só chamar a Injecar pelo WhatsApp para continuar o atendimento.</p><a className="button button--red" href={whatsappUrl}>Abrir WhatsApp <ArrowUpRight size={17} /></a></div> : <><label>Seu nome *<input required name="name" placeholder="Como podemos chamar você?" /></label><label>Telefone *<input required name="phone" type="tel" placeholder="(00) 00000-0000" /></label><label>Como podemos ajudar?<textarea name="message" rows={3} placeholder="Conte brevemente o que está acontecendo com o veículo..." /></label><button className="button button--red" type="submit">Solicitar contato <ArrowUpRight size={17} /></button></>}</form></div></section>
 
