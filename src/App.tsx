@@ -1,0 +1,175 @@
+import { useEffect, useState, type FormEvent } from 'react';
+import {
+  ArrowRight, ArrowUpRight, BatteryCharging, CarFront, Check, ChevronLeft, ChevronRight,
+  CircleGauge, Cog, Droplets, Fan, Gauge, Instagram, LocateFixed, Mail, MapPin,
+  Menu, MessageCircle, Phone, ShieldCheck, Sparkles, Star, Thermometer, Timer, Wrench, X,
+} from 'lucide-react';
+
+const phone = '5551982696724';
+const whatsappUrl = `https://wa.me/${phone}?text=${encodeURIComponent('Olá! Vim pelo site da Injecar e gostaria de falar sobre um serviço para o meu veículo.')}`;
+const mapsUrl = 'https://www.google.com/maps/search/?api=1&query=Rua+das+Adálias+37+Cecília+Viamão+RS';
+const routeUrl = 'https://www.google.com/maps/dir/?api=1&destination=Rua+das+Adálias+37+Cecília+Viamão+RS';
+
+const images = {
+  logo: '/14151769481.webp',
+  hero: '/730210568_18331418242261610_4238321417700025183_n.jpg',
+  workshop: '/681048939_18317284393261610_8019736608153311643_n.jpg',
+  mechanic: '/728951157_18325759207261610_3028685046551557509_n.jpg',
+  diagnostic: '/733171647_18325759216261610_7939968414557570078_n.jpg',
+  oil: '/752674403_18328175827261610_1891844332097946425_n.jpg',
+  transmission: '/755195219_18329217385261610_932121478158884375_n.jpg',
+  team: '/757602781_18329217319261610_5448296942135089883_n.jpg',
+  shop: '/757656925_18329217367261610_5140952744389651525_n.jpg',
+  fluid: '/758469173_18329217406261610_8646025379877701225_n.jpg',
+  engine: '/758647202_18329217307261610_8971566153452198695_n.jpg',
+  tools: '/766481619_18331418227261610_3905926026753926484_n.jpg',
+  service: '/768408176_18331418173261610_1933869028792409320_n.jpg',
+  brakes: '/768763105_18331418176261610_5197203723085048317_n.jpg',
+  underside: '/770962332_18331418197261610_2891615064485577160_n.jpg',
+  detail: '/773863123_18331418206261610_4609301319227943541_n.jpg',
+  repair: '/774042358_18331418194261610_2178427222121299118_n.jpg',
+};
+
+type IconType = typeof Wrench;
+type Service = { title: string; description: string; icon: IconType };
+
+const navItems = [
+  ['Início', 'inicio'], ['Sobre nós', 'sobre'], ['Serviços', 'servicos'],
+  ['Especialidades', 'especialidades'], ['Estrutura', 'estrutura'], ['Contato', 'contato'],
+];
+
+const trustItems: Service[] = [
+  { title: 'Diagnóstico preciso', description: 'Identificamos o problema antes de indicar a solução.', icon: CircleGauge },
+  { title: 'Experiência automotiva', description: 'Conhecimento para diferentes sistemas e necessidades.', icon: ShieldCheck },
+  { title: 'Tecnologia e equipamentos', description: 'Ferramentas adequadas para diagnóstico e manutenção.', icon: Gauge },
+  { title: 'Confiança e transparência', description: 'Clareza sobre o serviço necessário antes da execução.', icon: Sparkles },
+];
+
+const services: Service[] = [
+  { title: 'Injeção eletrônica', description: 'Diagnóstico e manutenção dos sistemas de injeção.', icon: CircleGauge },
+  { title: 'Mecânica geral', description: 'Manutenção dos principais sistemas mecânicos.', icon: Wrench },
+  { title: 'Suspensão', description: 'Estabilidade, segurança e conforto para rodar melhor.', icon: CarFront },
+  { title: 'Freios', description: 'Inspeção e manutenção do sistema de frenagem.', icon: ShieldCheck },
+  { title: 'Elétrica automotiva', description: 'Diagnóstico e manutenção dos sistemas elétricos.', icon: BatteryCharging },
+  { title: 'Eletrônica automotiva', description: 'Investigação de falhas e componentes eletrônicos.', icon: Gauge },
+  { title: 'Câmbio', description: 'Avaliação e manutenção da transmissão do veículo.', icon: Cog },
+  { title: 'Câmbio automático', description: 'Cuidados para preservar o funcionamento da transmissão.', icon: Cog },
+  { title: 'Troca de óleo', description: 'Lubrificação adequada para o cuidado do motor.', icon: Droplets },
+  { title: 'Ar-condicionado', description: 'Mais conforto e eficiência durante o trajeto.', icon: Fan },
+  { title: 'Arrefecimento', description: 'Controle térmico para proteger o motor.', icon: Thermometer },
+  { title: 'Embreagem', description: 'Diagnóstico e manutenção do sistema de embreagem.', icon: Cog },
+  { title: 'Escapamento', description: 'Avaliação do sistema e seus componentes.', icon: Wrench },
+  { title: 'Alinhamento', description: 'Direção mais estável e desgaste equilibrado.', icon: LocateFixed },
+  { title: 'Balanceamento', description: 'Mais conforto e segurança em cada quilômetro.', icon: Timer },
+];
+
+const gallery = [
+  { src: images.workshop, label: 'Estrutura da oficina' }, { src: images.diagnostic, label: 'Diagnóstico automotivo' },
+  { src: images.mechanic, label: 'Manutenção do motor' }, { src: images.transmission, label: 'Serviço automotivo' },
+  { src: images.engine, label: 'Detalhe técnico' }, { src: images.tools, label: 'Ferramentas e estrutura' },
+  { src: images.service, label: 'Equipe em ação' }, { src: images.brakes, label: 'Sistema de freios' },
+  { src: images.underside, label: 'Manutenção inferior' }, { src: images.detail, label: 'Cuidado nos detalhes' },
+  { src: images.repair, label: 'Reparo automotivo' }, { src: images.oil, label: 'Troca de fluido' },
+];
+
+const signs = ['Luz da injeção acesa', 'Motor falhando', 'Consumo elevado', 'Barulhos na suspensão', 'Problemas nos freios', 'Dificuldade para engatar marchas', 'Ar-condicionado sem eficiência', 'Carro puxando para um lado'];
+
+function App() {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<number | null>(null);
+  const [sent, setSent] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 24);
+    window.addEventListener('scroll', onScroll);
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  useEffect(() => {
+    document.body.style.overflow = menuOpen || selectedImage !== null ? 'hidden' : '';
+    return () => { document.body.style.overflow = ''; };
+  }, [menuOpen, selectedImage]);
+
+  const go = (id: string) => { setMenuOpen(false); document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' }); };
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => { event.preventDefault(); setSent(true); };
+
+  return (
+    <div className="site-shell">
+      <header className={`site-header ${scrolled ? 'site-header--scrolled' : ''}`}>
+        <div className="container header-inner">
+          <button className="brand" onClick={() => go('inicio')} aria-label="Voltar ao início">
+            <img src={images.logo} alt="Injecar Mecânica" />
+          </button>
+          <nav className="desktop-nav" aria-label="Navegação principal">
+            {navItems.map(([label, id]) => <button key={id} onClick={() => go(id)}>{label}</button>)}
+          </nav>
+          <div className="header-actions">
+            <a className="header-phone" href={`tel:+${phone}`}><Phone size={15} /> <span>(51) 98269-6724</span></a>
+            <a className="button button--small button--red" href={whatsappUrl}>Agendar serviço <ArrowUpRight size={16} /></a>
+            <button className="menu-button" aria-label="Abrir menu" aria-expanded={menuOpen} onClick={() => setMenuOpen(true)}><Menu /></button>
+          </div>
+        </div>
+      </header>
+
+      {menuOpen && <div className="mobile-menu-backdrop" onClick={() => setMenuOpen(false)} />}
+      <aside className={`mobile-menu ${menuOpen ? 'mobile-menu--open' : ''}`} aria-label="Menu mobile">
+        <div className="mobile-menu-top"><img src={images.logo} alt="Injecar" /><button aria-label="Fechar menu" onClick={() => setMenuOpen(false)}><X /></button></div>
+        {navItems.map(([label, id]) => <button key={id} onClick={() => go(id)}>{label}<ArrowRight size={17} /></button>)}
+        <a className="button button--red" href={whatsappUrl}>Chamar no WhatsApp <MessageCircle size={18} /></a>
+      </aside>
+
+      <main>
+        <section id="inicio" className="hero">
+          <img className="hero-image" src={images.hero} alt="Veículos em manutenção na oficina Injecar" fetchPriority="high" />
+          <div className="hero-overlay" />
+          <div className="container hero-content">
+            <div className="eyebrow"><span className="eyebrow-line" /> INJECAR MECÂNICA <span className="eyebrow-location">VIAMÃO / RS</span></div>
+            <h1>Seu carro nas mãos<br /><em>de quem entende.</em></h1>
+            <p className="hero-copy">Manutenção, diagnóstico e serviços automotivos com atendimento especializado, tecnologia e transparência.</p>
+            <div className="hero-actions"><a className="button button--red" href={whatsappUrl}>Chamar no WhatsApp <MessageCircle size={18} /></a><button className="button button--outline-light" onClick={() => go('contato')}>Solicitar orçamento <ArrowRight size={18} /></button></div>
+            <div className="hero-tags">{['Mecânica automotiva', 'Diagnóstico', 'Injeção eletrônica', 'Câmbio automático'].map(tag => <span key={tag}><Check size={14} /> {tag}</span>)}</div>
+          </div>
+          <div className="hero-scroll">SCROLL PARA EXPLORAR <span /></div>
+        </section>
+
+        <section className="trust-bar"><div className="container trust-grid">{trustItems.map(({ title, description, icon: Icon }) => <article className="trust-item" key={title}><Icon className="trust-icon" size={25} /><div><h3>{title}</h3><p>{description}</p></div></article>)}</div></section>
+
+        <section id="servicos" className="section section--light"><div className="container">
+          <div className="section-heading"><div><div className="eyebrow eyebrow--dark"><span className="eyebrow-line" /> O QUE FAZEMOS</div><h2>Soluções para o seu carro,<br /><span>do diagnóstico ao reparo.</span></h2></div><p>Da manutenção preventiva aos diagnósticos mais específicos, a Injecar reúne diferentes serviços automotivos em um só lugar.</p></div>
+          <div className="service-grid">{services.map(({ title, description, icon: Icon }) => <article className="service-card" key={title}><div className="service-icon"><Icon size={22} /></div><h3>{title}</h3><p>{description}</p><ArrowUpRight className="card-arrow" size={18} /></article>)}</div>
+        </div></section>
+
+        <section id="especialidades" className="section specialties"><div className="container specialties-grid"><div className="specialty-copy"><div className="eyebrow"><span className="eyebrow-line" /> ESPECIALIDADES</div><h2>Conhecimento técnico<br /><em>em cada detalhe.</em></h2><p>Uma estrutura preparada para cuidar de diferentes sistemas do seu veículo com atenção, método e responsabilidade.</p><div className="specialty-list">{['Injeção eletrônica', 'Diagnóstico automotivo', 'Elétrica e eletrônica', 'Câmbio automático', 'Mecânica geral'].map((item, index) => <div key={item}><span>0{index + 1}</span><strong>{item}</strong><ArrowUpRight size={17} /></div>)}</div><a className="text-link" href={whatsappUrl}>Falar com a Injecar <ArrowRight size={17} /></a></div><div className="specialty-image"><img src={images.diagnostic} alt="Mecânico realizando diagnóstico automotivo" loading="lazy" /><div className="image-note"><span className="red-dot" /> Precisão antes da troca</div></div></div></section>
+
+        <section className="section transmission"><div className="container transmission-grid"><div className="transmission-image"><img src={images.transmission} alt="Serviço de manutenção automotiva na Injecar" loading="lazy" /><span className="photo-index">02 / 05</span></div><div className="transmission-copy"><div className="eyebrow"><span className="eyebrow-line" /> ESPECIALIDADE EM DESTAQUE</div><h2>Câmbio<br /><em>automático.</em></h2><p>Manutenção, avaliação e cuidados para preservar o funcionamento e a durabilidade da transmissão automática.</p><ul>{['Avaliação do sistema', 'Manutenção preventiva', 'Revisão e troca de fluido', 'Reparos e ajustes'].map(item => <li key={item}><Check size={16} /> {item}</li>)}</ul><a className="button button--red" href={whatsappUrl}>Falar com a Injecar <ArrowUpRight size={17} /></a></div></div></section>
+
+        <section id="sobre" className="section about"><div className="container about-grid"><div className="about-image"><img src={images.workshop} alt="Interior da oficina Injecar em Viamão" loading="lazy" /><div className="about-badge"><strong>Desde</strong><span>2013</span><small>em Viamão</small></div></div><div className="about-copy"><div className="eyebrow eyebrow--dark"><span className="eyebrow-line" /> SOBRE A INJECAR</div><h2>Uma oficina feita<br /><span>para cuidar do seu carro.</span></h2><p>Desde 2013, a Injecar atua em Viamão oferecendo manutenção e reparação automotiva para clientes que procuram conhecimento técnico, atendimento e confiança para cuidar do veículo.</p><p>Nossa atuação reúne mecânica, diagnóstico, elétrica e eletrônica automotiva, transmissão, câmbio automático e diferentes serviços de manutenção.</p><p className="about-signature">Aqui, cada veículo merece atenção ao problema certo e à solução adequada.</p><a className="text-link" href={whatsappUrl}>Conheça a Injecar <ArrowRight size={17} /></a></div></div></section>
+
+        <section className="section why"><div className="container"><div className="section-heading section-heading--center"><div><div className="eyebrow"><span className="eyebrow-line" /> NOSSO JEITO DE TRABALHAR</div><h2>Mais do que consertar.<br /><em>Cuidar do seu carro.</em></h2></div><p>O atendimento começa ouvindo o que o veículo está mostrando e explicando com clareza o caminho mais adequado.</p></div><div className="why-grid">{[['01', 'Diagnóstico antes da troca', 'Buscar a causa do problema.'], ['02', 'Atendimento próximo', 'Explicação clara sobre o que está acontecendo.'], ['03', 'Estrutura profissional', 'Um espaço real, organizado para cuidar.'], ['04', 'Tecnologia', 'Ferramentas voltadas ao diagnóstico e manutenção.'], ['05', 'Transparência', 'Sem linguagem técnica desnecessária.'], ['06', 'Soluções completas', 'Diversos serviços no mesmo endereço.']].map(([number, title, description]) => <article key={number}><span className="why-number">{number}</span><h3>{title}</h3><p>{description}</p></article>)}</div></div></section>
+
+        <section className="diagnostic"><div className="diagnostic-image"><img src={images.mechanic} alt="Mecânico trabalhando no motor de um veículo" loading="lazy" /></div><div className="diagnostic-copy"><div className="eyebrow"><span className="eyebrow-line" /> TECNOLOGIA & DIAGNÓSTICO</div><h2>Nem todo problema<br /><em>aparece debaixo do capô.</em></h2><p>Um diagnóstico adequado ajuda a entender o que realmente está acontecendo com o veículo e evita decisões baseadas apenas em suposições.</p><a className="button button--outline-light" href={whatsappUrl}>Solicitar avaliação <ArrowRight size={18} /></a></div></section>
+
+        <section className="section section--light signs"><div className="container"><div className="section-heading"><div><div className="eyebrow eyebrow--dark"><span className="eyebrow-line" /> FIQUE ATENTO</div><h2>Seu carro está dando<br /><span>algum destes sinais?</span></h2></div><p>Perceber os sinais cedo ajuda a cuidar do problema certo antes que ele cresça.</p></div><div className="sign-grid">{signs.map((sign, index) => <div className="sign-card" key={sign}><span>0{index + 1}</span><h3>{sign}</h3><ArrowUpRight size={18} /></div>)}</div><div className="center-cta"><p>Não espere um pequeno sinal se transformar em um problema maior.</p><a className="button button--red" href={whatsappUrl}>Agendar uma avaliação <ArrowUpRight size={17} /></a></div></div></section>
+
+        <section id="estrutura" className="section gallery-section"><div className="container"><div className="section-heading"><div><div className="eyebrow eyebrow--dark"><span className="eyebrow-line" /> POR DENTRO DA INJECAR</div><h2>Conheça nossa<br /><span>oficina.</span></h2></div><p>Um pouco do espaço, das pessoas e do cuidado que fazem parte de cada atendimento.</p></div><div className="gallery-grid">{gallery.map(({ src, label }, index) => <button className={`gallery-item gallery-item--${index + 1}`} key={src} onClick={() => setSelectedImage(index)}><img src={src} alt={label} loading="lazy" /><span>{label}<ArrowUpRight size={15} /></span></button>)}</div></div></section>
+
+        <section className="section testimonials"><div className="container testimonial-inner"><div className="eyebrow"><span className="eyebrow-line" /> EXPERIÊNCIA DE QUEM CONFIA</div><h2>Ainda vamos contar<br /><em>essas histórias.</em></h2><p>Este espaço está preparado para receber avaliações reais dos clientes da Injecar.</p><div className="testimonial-placeholder"><div className="stars">{[1,2,3,4,5].map(i => <Star key={i} size={18} />)}</div><strong>Depoimentos reais em breve</strong><span>Conteúdo em atualização</span></div></div></section>
+
+        <section id="contato" className="section contact"><div className="container contact-grid"><div className="contact-info"><div className="eyebrow eyebrow--dark"><span className="eyebrow-line" /> FALE COM A INJECAR</div><h2>Precisa de uma<br /><span>avaliação?</span></h2><p>Entre em contato com a Injecar e explique o que está acontecendo com seu veículo. Nossa equipe poderá orientar você sobre o próximo passo.</p><div className="contact-links"><a href={whatsappUrl}><MessageCircle size={20} /><div><small>WhatsApp</small><strong>(51) 98269-6724</strong></div><ArrowUpRight size={17} /></a><a href={`tel:+${phone}`}><Phone size={20} /><div><small>Telefone</small><strong>(51) 98269-6724</strong></div><ArrowUpRight size={17} /></a><a href="https://instagram.com/injecaroficina" target="_blank" rel="noreferrer"><Instagram size={20} /><div><small>Instagram</small><strong>@injecaroficina</strong></div><ArrowUpRight size={17} /></a></div></div><form className="contact-form" onSubmit={handleSubmit}><div className="form-top"><span>Solicite um contato</span><span className="form-required">* campos obrigatórios</span></div>{sent ? <div className="success-message"><Check size={28} /><h3>Mensagem preparada.</h3><p>Agora é só chamar a Injecar pelo WhatsApp para continuar o atendimento.</p><a className="button button--red" href={whatsappUrl}>Abrir WhatsApp <ArrowUpRight size={17} /></a></div> : <><label>Seu nome *<input required name="name" placeholder="Como podemos chamar você?" /></label><label>Telefone *<input required name="phone" type="tel" placeholder="(00) 00000-0000" /></label><label>Como podemos ajudar?<textarea name="message" rows={3} placeholder="Conte brevemente o que está acontecendo com o veículo..." /></label><button className="button button--red" type="submit">Solicitar contato <ArrowUpRight size={17} /></button></>}</form></div></section>
+
+        <section className="location"><div className="location-map"><div className="map-grid" /><div className="map-pin"><MapPin size={24} /></div><div className="map-label"><strong>INJECAR MECÂNICA</strong><span>Rua das Adálias, 37</span></div></div><div className="location-copy"><div className="eyebrow"><span className="eyebrow-line" /> ONDE ESTAMOS</div><h2>Estamos<br /><em>em Viamão.</em></h2><p>Rua das Adálias, 37<br />Cecília — Viamão/RS<br />CEP 94475-400</p><div className="location-actions"><a className="button button--red" href={mapsUrl} target="_blank" rel="noreferrer">Ver no Google Maps <ArrowUpRight size={17} /></a><a className="text-link text-link--light" href={routeUrl} target="_blank" rel="noreferrer">Traçar rota <ArrowRight size={17} /></a></div></div></section>
+
+        <section className="final-cta"><img src={images.shop} alt="Oficina Injecar em Viamão" loading="lazy" /><div className="final-overlay" /><div className="container final-content"><div className="eyebrow"><span className="eyebrow-line" /> PRONTO PARA CUIDAR MELHOR</div><h2>Seu carro merece<br /><em>cuidado de verdade.</em></h2><p>Conte com a Injecar para manutenção, diagnóstico e serviços automotivos em Viamão.</p><div className="hero-actions"><a className="button button--red" href={whatsappUrl}>Agendar serviço <ArrowUpRight size={17} /></a><a className="button button--outline-light" href={whatsappUrl}>Chamar no WhatsApp <MessageCircle size={17} /></a></div></div></section>
+      </main>
+
+      <footer className="footer"><div className="container footer-grid"><div className="footer-brand"><div className="brand brand--footer"><img src={images.logo} alt="Injecar Mecânica" /></div><p>Mecânica, diagnóstico e serviços automotivos em Viamão/RS.</p><a className="footer-whatsapp" href={whatsappUrl}><MessageCircle size={17} /> Falar pelo WhatsApp</a></div><div><h3>Explorar</h3>{navItems.slice(0, 5).map(([label, id]) => <button key={id} onClick={() => go(id)}>{label}</button>)}</div><div><h3>Contato</h3><a href={mapsUrl} target="_blank" rel="noreferrer">Rua das Adálias, 37<br />Cecília — Viamão/RS</a><a href={`tel:+${phone}`}>(51) 98269-6724</a><a href="https://instagram.com/injecaroficina" target="_blank" rel="noreferrer">@injecaroficina</a></div></div><div className="container footer-bottom"><span>© INJECAR MECÂNICA. Todos os direitos reservados.</span><span>Desenvolvido por <strong>Wevira</strong></span></div></footer>
+
+      <a className="floating-whatsapp" href={whatsappUrl} aria-label="Chamar no WhatsApp"><MessageCircle size={25} /><span>Fale conosco</span></a>
+
+      {selectedImage !== null && <div className="lightbox" role="dialog" aria-modal="true" aria-label="Visualização da galeria" onClick={() => setSelectedImage(null)}><button className="lightbox-close" aria-label="Fechar" onClick={() => setSelectedImage(null)}><X /></button><button className="lightbox-prev" aria-label="Imagem anterior" onClick={e => { e.stopPropagation(); setSelectedImage((selectedImage - 1 + gallery.length) % gallery.length); }}><ChevronLeft /></button><img src={gallery[selectedImage].src} alt={gallery[selectedImage].label} onClick={e => e.stopPropagation()} /><button className="lightbox-next" aria-label="Próxima imagem" onClick={e => { e.stopPropagation(); setSelectedImage((selectedImage + 1) % gallery.length); }}><ChevronRight /></button><span className="lightbox-caption">{gallery[selectedImage].label}</span></div>}
+    </div>
+  );
+}
+
+export default App;
