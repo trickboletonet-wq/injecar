@@ -7,7 +7,7 @@ import {
 
 const phone = '5551982696724';
 const whatsappUrl = `https://wa.me/${phone}?text=${encodeURIComponent('Olá! Vim pelo site da Injecar e gostaria de falar sobre um serviço para o meu veículo.')}`;
-const mapsUrl = 'https://www.google.com/maps/search/?api=1&query=Rua+das+Adálias+37+Cecília+Viamão+RS';
+const mapsUrl = 'https://maps.app.goo.gl/Ai7Jx5JnuQyK23bt6';
 const routeUrl = 'https://www.google.com/maps/dir/?api=1&destination=Rua+das+Adálias+37+Cecília+Viamão+RS';
 
 const images = {
