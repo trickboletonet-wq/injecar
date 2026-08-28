@@ -11,7 +11,7 @@ const mapsUrl = 'https://maps.app.goo.gl/Ai7Jx5JnuQyK23bt6';
 const routeUrl = 'https://www.google.com/maps/dir/?api=1&destination=Rua+das+Adálias+37+Cecília+Viamão+RS';
 
 const images = {
-  logo: '/image copy 6.png',
+  logo: '/injecar-logo-new.png',
   hero: '/730210568_18331418242261610_4238321417700025183_n.jpg',
   workshop: '/681048939_18317284393261610_8019736608153311643_n.jpg',
   mechanic: '/728951157_18325759207261610_3028685046551557509_n.jpg',
